@@ -1,0 +1,10 @@
+# Exclude Directories
+.vs/
+/bin/
+/bin-int/
+External/glm/doc
+
+# Exclude Files
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
