@@ -12,7 +12,7 @@ project "VolumeInspector"
     targetdir ("bin" .. outputDir .. "/%{prj.name}")
     objdir ("bin-int" .. outputDir .. "/%{prj.name}")
 
-    libdirs {"%{prj.location}External\Lib"}
+    libdirs {"%{prj.location}External/Lib"}
 
     filter "system.windows"
         cppdialect "C++17"

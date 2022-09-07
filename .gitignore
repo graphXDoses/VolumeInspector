@@ -5,6 +5,6 @@
 External/glm/doc
 
 # Exclude Files
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
+#*.vcxproj
+#*.vcxproj.filters
+#*.vcxproj.user
