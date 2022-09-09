@@ -1,12 +1,15 @@
-#include "ngnpch.h"
-#include "VolumeEngine.h"
+#pragma once
+#include "Engine/Core/Base.h"
+#include "Engine/Core/Application.h"
+
+extern MobiusEngine::Application* MobiusEngine::CreateApplication();
 
 #ifdef MBS_DEBUG
 int main(int argc, char** argv)
 {
-    VolumeEngine::Log::Init();
+    MobiusEngine::Log::Init();
     NGN_CORE_INFO("DEBUG MODE");
-    auto app = VolumeEngine::CreateApplication("Ogotomos - Demo");
+    auto app = MobiusEngine::CreateApplication();
     NGN_TRACE("Application Created!");
 
     NGN_CORE_INFO("Application Starting..");
@@ -25,9 +28,9 @@ int WinMain(
     int nShowCmd
 )
 {
-    VolumeEngine::Log::Init();
+    MobiusEngine::Log::Init();
     NGN_CORE_INFO("RELEASE MODE");
-    auto app = VolumeEngine::CreateApplication("Ogotomos - Demo");
+    auto app = MobiusEngine::CreateApplication();
     NGN_TRACE("Application Created!");
 
     NGN_CORE_INFO("Application Starting..");
@@ -39,3 +42,4 @@ int WinMain(
     return 0;
 }
 #endif
+
