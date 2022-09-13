@@ -44,7 +44,6 @@ namespace MobiusEngine
 		if (s_GLFWWindowCount == 0)
 		{
 			int success = glfwInit();
-			//NGN_CORE_ASSERT(success, "Could not initialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 

@@ -16,7 +16,6 @@ namespace MobiusEngine
 	Application::Application(const ConfigurationProtocol& config)
 		:m_config(config)
 	{
-		//NGN_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 		m_Window = Window::Create(WindowProps(m_config.AppName));
 		m_Window->SetEventCallback(NGN_BIND_EVENT_FNC(Application::OnEvent));
