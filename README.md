@@ -13,11 +13,10 @@ List of contents:
         - [Direct volume rendering](#direct-volume-rendering)
     - [Implementation in VolumeInspector](#implementation-in-volumeinspector)
 - [Features](#features)
-<!-- - [Requirements](#requirements) -->
 - [References](#references)
 
 ## Overview
-VolumeInspector is an early-stage technical software for volume visualization and basic analysis, orienting towards medical applications. It is build on top of the [Mobius rendering engine]() and utilizes many of its features. This software is a proof of concept and its development process proved to be a solid educational starting point for technical software development with demands on graphics. It is not intended to become a fully-featured application, or a marketable product.
+VolumeInspector is an early-stage technical software for volume visualization and basic analysis, orienting towards medical applications. It is build on top of the [Mobius rendering engine](MobiusEngine/README.md) and utilizes many of its features. This software is a proof of concept and its development process proved to be a solid educational starting point for technical software development with demands on graphics. It is not intended to become a fully-featured application, or a marketable product.
 
 ---
 ## Volume Rendering
@@ -131,39 +130,62 @@ In its basic form, the volume ray casting algorithm can be described by the foll
 
 Initially, the ray-path calculation determines the voxels that are penetrated by a given ray. The interpolation estimates the value at a re-sample location using a small neighborhood of voxel values. The gradient estimation estimates a surface normal using a neighborhood of voxels surrounding the re-sample location. The classification maps interpolated sample values and the estimated surface normal to a color and opacity. The shading uses the gradient and classification information to compute a color that takes the interaction of light into account on the estimated surfaces in the dataset. The composition uses shaded color values and the opacity to compute a final pixel color to display. Ray casting can be classified into two sub-classes according to the level of interpolation used [13]:
 
-<!-- Should those be kept?? -->
-- Algorithms that use a zero order interpolation
-- Algorithms that use a higher order interpolation
+1. Algorithms that use a zero order interpolation,
 
-Algorithms that use a zero order interpolation are Binary Ray Casting, and Discrete Ray Casting. Binary Ray Casting was developed to generate images of surfaces contained within binary volumetric data without the need to explicitly perform boundary detection and hidden-surface removal. For each pixel on the image plane, a ray is cast from that pixel to determine if it intersects the surface contained within the data. In order to determine the first intersection along the ray a stepping technique is used where the value is determined at regular intervals along the ray until the object is intersected. Data samples with a value of 0 are considered to be the background while those with a value of 1 are considered to be a part of the object [65]. In Discrete Ray Casting, instead of traversing a continuous ray and determining the closest data sample for each step, a discrete representation of the ray is traversed [14]. This discrete ray is generated using a 3D Bresenham-like algorithm or a 3D line scan-conversion (voxelization) algorithm [66, 67]. As in the previous algorithms, for each pixel in the image plane, the data samples which contribute to it need to be determined. This could be done by casting a ray from each pixel in the direction of the viewing ray. This ray would be discretized (voxelized), and the contribution from each voxel along the path is considered when producing the final pixel value [68].
+2. Algorithms that use a higher order interpolation.
 
-Algorithms that use a higher order interpolation are the image order volume rendering algorithm of Levoy, V-Buffer image order ray casting , and V-Buffer cell-by-cell processing. The image-order volume rendering algorithm developed by Levoy [69] states that given an array of data samples , two new arrays which define the color and opacity at each grid location can be generated using preprocessing techniques. The interpolation functions which specify the sample value, color, and opacity at any location in volume, are then defined by using transfer functions proposed by him. Generating the array of color values involves performing a shading operation. In V-Buffer image order ray casting method, rays are cast from each pixel on the image plane into the volume. For each cell in the volume along the path of this ray, a scalar value is determined at the point where the ray first intersects the cell. The ray is then stepped along until it traverses the entire cell, with calculations for scalar values, shading, opacity, texture mapping, and depth cuing performed at each stepping point. This process is repeated for each cell along the ray, accumulating color and opacity, until the ray exits the volume, or the accumulated opacity reaches to unity. At this point, the accumulated color and opacity for that pixel are stored, and the next ray is cast. The goal of this method is not to produce a realistic image, but instead to provide a representation of the volumetric data which can be interpreted by a scientist or an engineer. In V-Buffer cell-by-cell processing method each cell in the volume is processed in a front-to-back order [14, 70]. Processing begins on the plane closest to the viewpoint, and progresses in a plane-by-plane manner. Within each plane, processing begins with the cell closest to the viewpoint, and then continues in the order of increasing distance from the viewpoint. Each cell is processed by first determining for each scan line in the image plane which pixels are affected by the cell. Then, for each pixel an integration volume is determined. This process continues in a front-to-back order, until all cells have been processed, with an intensity accumulated into pixel values.
+Algorithms that use a zero order interpolation are Binary Ray Casting, and Discrete Ray Casting. Binary Ray Casting was developed to generate images of surfaces contained within binary volumetric data without the need to explicitly perform boundary detection and hidden-surface removal. For each pixel on the image plane, a ray is cast from that pixel to determine if it intersects the surface contained within the data. In order to determine the first intersection along the ray a stepping technique is used where the value is determined at regular intervals along the ray until the object is intersected. Data samples with a value of 0 are considered to be the background while those with a value of 1 are considered to be a part of the object [21]. In Discrete Ray Casting, instead of traversing a continuous ray and determining the closest data sample for each step, a discrete representation of the ray is traversed [13]. This discrete ray is generated using a 3D Bresenham-like algorithm or a 3D line scan-conversion (voxelization) algorithm [22, 23]. As with other algorithms, for each pixel in the image plane, the data samples which contribute to it need to be determined. This could be done by casting a ray from each pixel in the direction of the viewing ray. This ray would be discretized (voxelized), and the contribution from each voxel along the path is considered when producing the final pixel value [24].
 
-<!-- Should those be kept?? -->
+Algorithms that use a higher order interpolation are the image order volume rendering algorithm of Levoy, V-Buffer image order ray casting , and V-Buffer cell-by-cell processing. The image-order volume rendering algorithm developed by Levoy [25] states that given an array of data samples , two new arrays which define the color and opacity at each grid location can be generated using preprocessing techniques. The interpolation functions which specify the sample value, color, and opacity at any location in volume, are then defined by using transfer functions proposed by him. Generating the array of color values involves performing a shading operation. In V-Buffer image order ray casting method, rays are cast from each pixel on the image plane into the volume. For each cell in the volume along the path of this ray, a scalar value is determined at the point where the ray first intersects the cell. The ray is then stepped along until it traverses the entire cell, with calculations for scalar values, shading, opacity, texture mapping, and depth cuing performed at each stepping point. This process is repeated for each cell along the ray, accumulating color and opacity, until the ray exits the volume, or the accumulated opacity reaches to unity. At this point, the accumulated color and opacity for that pixel are stored, and the next ray is cast. The goal of this method is not to produce a realistic image, but instead to provide a representation of the volumetric data which can be interpreted by a scientist or an engineer. In V-Buffer cell-by-cell processing method each cell in the volume is processed in a front-to-back order [13, 26]. Processing begins on the plane closest to the viewpoint, and progresses in a plane-by-plane manner. Within each plane, processing begins with the cell closest to the viewpoint, and then continues in the order of increasing distance from the viewpoint. Each cell is processed by first determining for each scan line in the image plane which pixels are affected by the cell. Then, for each pixel an integration volume is determined. This process continues in a front-to-back order, until all cells have been processed, with an intensity accumulated into pixel values.
 
 ---
 
 ### Implementation in VolumeInspector
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+VolumeInspector implements a version of Discrete Ray Casting, direct volume rendering algorithm with trilinear reconstruction filter.
+
+#### Texture Input
+The software currently imports a single atlas 2D texture and uses it as the dataset for the shaders responsible for rendering the volume. The altas texture contains all vertical slices that represent the volume in a grayscale, 32bit format. Due to the software being at an early stage the layout of the slices in the texture is not parameterized yet, thus atlases can only contain 96 slices arranged in a 10x10 grid, with the top(first) slice being placed at the top left corner. No restrictions apply for the size of the texture. Once the domain is constructed in the vertex shader and thereby the necessary fragments are produced, the fragment shader takes over and starts by dividing the uv space of the altas texture into a 10x10  grid, creating tiles each corresponding to slices of the volume. The shader utilizes 96 out of 100 tiles - as mentioned above - for the ray casting process.
+
+#### Volume Clipping Plane
+A modification in the ray casting algorithm in the software gives the ability to cut or hide parts of the volume without impacting performance. This is actually done by defining a plane that works as a guide for the casted ray to stop or keep progressing. If the plane's normal vector faces the ray source(eye) then rays hitting the domain progress through the volume until they reach the plane's surface. If the normal vector is not facing the ray source then rays start from their intersection point with the surface of the plane and progress through the volume. **Figure 1.7** demonstrates:
+
+<figure id="vva-class">
+  <img src="doc/clipplanes.jpg">
+  <figcaption style="font-style: italic">
+    <strong>Figure 1.7 </strong>
+    <em>Volume clipping with two opposite oriented planes. Ray progresses through the volume from point a to point b.</em>
+  </figcaption>
+</figure>
 
 ---
 ## Features
 
-#### Dockable Panels
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-
 #### Opacity Control
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+Slider for controling the overal opacity the volume has.
+
+![show_opacity](doc/show_opacity.gif)
+
+---
 
 #### Intensity Value Clamping
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+Range that limits volume visibility to isolate parts of the volume based on intensity.
+
+![show_intensity](doc/show_intensity.gif)
+
+---
 
 #### Color Mapping
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+Color output of the volume based on predetermined classifications. Those are grayscale (by default) and heatmap.
 
-#### Volume Clipping Plane
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+![show_color](doc/show_color.gif)
+
+---
+
+#### Volume Clipping
+Clipping of volume with plane surface. Clipping is controled with parameters such as orientation (pitch, yaw) and depth. There is also an option for locking the clipping plane to the camera position.
+
+![show_clipping](doc/show_clipping.gif)
 
 ---
 
@@ -193,11 +215,11 @@ When active context is *Display*:
 
 3. Foley, J.D., Dam, A.V., Feiner S.K., and Hughes J.F., Phillips R.L. (1995). *Introduction to Computer Graphics.* Massachusetts: Addison-Wesley.
 
-4. Ray, H., Pfister, H., Silver, D., and Cook, T.A. (1999). Ray Casting Architectures for Volume Visualization. *IEEE Transactions on Visualization and Computer Graphics, 5*(3), 210-233
+4. Ray, H., Pfister, H., Silver, D., and Cook, T.A. (1999). Ray Casting Architectures for Volume Visualization. *IEEE Transactions on Visualization and Computer Graphics*, **5**(3), 210-233
 
-5. Jones, M.W. (1996). The Production of Volume Data fram Triangular Meshes Using Voxelization. *Computer Graphics Forum, 15*(5), 311-318
+5. Jones, M.W. (1996). The Production of Volume Data fram Triangular Meshes Using Voxelization. *Computer Graphics Forum*, **15**(5), 311-318
 
-6. Cooke, J.M., Zyda, M.J., Pratt, D.R., and McGhee, R.B. (1992). NPSNET: Flight Simulation Dynamic Modeling Using Quaternions. *Teleoperations and Virtual Environments, 1*(4), 404-420
+6. Cooke, J.M., Zyda, M.J., Pratt, D.R., and McGhee, R.B. (1992). NPSNET: Flight Simulation Dynamic Modeling Using Quaternions. *Teleoperations and Virtual Environments*, **1**(4), 404-420
 
 7.  Schalkoff, R.J. (1989). *Digital Image Processing and Computer Vision.* Singapore: John Wiley & Sons Publishing.
 
@@ -226,3 +248,15 @@ When active context is *Display*:
 19. Lacroute, P., and Levoy, M. (1994). Fast Volume Rendering Using a Shear-Warp Factorization of the Viewing Transform. *Computer Graphics Proceedings Annual Conference Series ACM SIGGRAPH*, 451-458.
 
 20. Whitted T. (1979) *An Improved Illumination Model for Shaded Display*. Proceedings of the 6th annual conference on Computer graphics and interactive techniques
+
+21. H. K. Tuy, L T. Tuy, Direct 2-D Display of 3-D Objects, *IEEE Computer Graphics &Applications*,  4, 10 November 1984), 29-33.
+
+22. Kaufman, A., and Shimony, E., (1986). 3D Scan-Conversion Algorithms for Voxel-Based Graphics. *Proc. ACM Workshop on Interactive 3D Graphics*, 45-76.
+
+23. Kaufman, A., (1987). An Algorithm for 3D Scan-Conversion of Polygons. *Proc. EUROGRAPHICS’87*, 197-208
+
+24. Yagel, R., Cohen, D., and Kaufman, A. (1992). Discrete Ray Tracing. *IEEE Computer Graphics &Applications*, **12**(5), 19-28.
+
+25. Levoy, M. (1988). Display of Surfaces from Volume Data. *Computer Graphics and Applications*, **8**(5), 29-37.
+
+26. Upson, C., and Keeler, M. (1988). V-BUFFER: Visible Volume Rendering. *Computer Graphics ACM Siggraph'88 Conference Proceedings*, **22**(4), 59-64
